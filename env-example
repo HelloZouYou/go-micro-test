@@ -1,0 +1,44 @@
+###########################################################
+###################### General Setup ######################
+###########################################################
+
+### Paths #################################################
+
+# 代码主机地址
+APP_CODE_PATH_HOST=./
+
+# 代码容器地址
+APP_CODE_PATH_CONTAINER=/var/www
+
+# 容器数据主机存储地址
+DATA_PATH_HOST=./data
+
+# Windows下; Linux下:
+COMPOSE_PATH_SEPARATOR=;
+
+# COMPOSE 项目名称
+# COMPOSE_PROJECT_NAME=go-micro-dock
+
+# Docker 在主机的IP
+DOCKER_HOST_IP=10.0.80.1
+
+# Windows 路径转换
+COMPOSE_CONVERT_WINDOWS_PATHS=1
+
+# 时区
+TIMEZONE=PRC
+
+# GOPROXY
+GOPROXY=https://goproxy.cn
+
+### MYSQL #################################################
+MYSQL_VERSION=5.7
+MYSQL_DATABASE=micro_book_mall
+MYSQL_USER=default
+MYSQL_PASSWORD=secret
+MYSQL_PORT=33062
+MYSQL_ROOT_PASSWORD=root
+MYSQL_ENTRYPOINT_INITDB=./mysql/docker-entrypoint-initdb.d
+
+### ETCD ##################################################
+ETCD_VERSION=v3.4.0

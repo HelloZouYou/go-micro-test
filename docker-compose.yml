@@ -1,0 +1,93 @@
+version: "3"
+
+networks:
+  frontend:
+    driver: bridge
+  backend:
+    driver: bridge
+
+volumes:
+  user-srv:
+    driver: local
+
+services:
+  ### WORKSPACE ###########################################
+  workspace:
+    build: ./workspace
+    environment:
+      - TZ=${TIMEZONE}
+      - GOPROXY=${GOPROXY}
+    volumes:
+      - ${APP_CODE_PATH_HOST}:${APP_CODE_PATH_CONTAINER}:cached
+    tty: true
+    ports:
+      - "8082:8082"
+    networks:
+      - frontend
+      - backend
+    depends_on:
+      - mysql
+      - etcd
+
+  ### MySQL ###############################################
+  mysql:
+    build:
+      context: ./mysql
+      args:
+        - MYSQL_VERSION=${MYSQL_VERSION}
+    environment:
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - TZ=${TIMEZONE}
+    volumes:
+      - ${DATA_PATH_HOST}/mysql:/var/lib/mysql
+      - ${MYSQL_ENTRYPOINT_INITDB}:/docker-entrypoint-initdb.d
+    ports:
+      - "${MYSQL_PORT}:3306"
+    networks:
+      - backend
+
+  ### ETCD ################################################
+  etcd:
+    image: quay.io/coreos/etcd:${ETCD_VERSION}
+    expose:
+      - 2379
+      - 2380
+    networks:
+      - backend
+    environment:
+      - ETCDCTL_API=3
+    command:
+      - /usr/local/bin/etcd
+      - --initial-advertise-peer-urls
+      - http://0.0.0.0:2380
+      - --listen-peer-urls
+      - http://0.0.0.0:2380
+      - --advertise-client-urls
+      - http://0.0.0.0:2379
+      - --listen-client-urls
+      - http://0.0.0.0:2379
+      - --initial-cluster
+      - default=http://0.0.0.0:2380
+      - --log-level
+      - debug
+      - --logger
+      - zap
+      - --log-outputs
+      - stderr
+
+  ### USER-SRV ############################################
+  user-srv:
+    build: ./user-srv
+    environment:
+      - TZ=${TIMEZONE}
+    ports:
+      - "8080:8080"
+    tty: true
+    networks:
+      - backend
+    depends_on:
+      - mysql
+      - etcd

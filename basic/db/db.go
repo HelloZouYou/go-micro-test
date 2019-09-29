@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/HelloZouYou/go-micro-test/user-srv/basic/config"
+	"github.com/HelloZouYou/go-micro-test/basic/config"
 	"github.com/micro/go-micro/util/log"
 )
 

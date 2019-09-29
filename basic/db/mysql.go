@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	_ "github.com/go-sql-driver/mysql"
 
-	"github.com/HelloZouYou/go-micro-test/user-srv/basic/config"
+	"github.com/HelloZouYou/go-micro-test/basic/config"
 	"github.com/micro/go-micro/util/log"
 )
 

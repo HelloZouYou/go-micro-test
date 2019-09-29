@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 
-	"github.com/HelloZouYou/go-micro-test/user-srv/basic"
-	"github.com/HelloZouYou/go-micro-test/user-srv/basic/config"
+	"github.com/HelloZouYou/go-micro-test/basic"
+	"github.com/HelloZouYou/go-micro-test/basic/config"
 	"github.com/HelloZouYou/go-micro-test/user-srv/handler"
 	"github.com/HelloZouYou/go-micro-test/user-srv/model"
 	s "github.com/HelloZouYou/go-micro-test/user-srv/proto/user"

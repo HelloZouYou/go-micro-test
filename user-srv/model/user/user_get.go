@@ -1,7 +1,7 @@
 package user
 
 import (
-	"github.com/HelloZouYou/go-micro-test/user-srv/basic/db"
+	"github.com/HelloZouYou/go-micro-test/basic/db"
 	proto "github.com/HelloZouYou/go-micro-test/user-srv/proto/user"
 	"github.com/micro/go-micro/util/log"
 )

@@ -5,10 +5,11 @@ LABEL maintainer="Zou You <1075820342@qq.com>"
 # 添加 alias
 COPY ./aliases.sh /root/aliases.sh
 
-RUN alias ll="ls -l" && sed -i 's/\r//' /root/aliases.sh && \
+RUN sed -i 's/\r//' /root/aliases.sh && \
     echo "" >> ~/.bashrc && \
     echo "# Load Custom Aliases" >> ~/.bashrc && \
     echo "source ~/aliases.sh" >> ~/.bashrc && \
+    echo "alias ll='ls -l'" && \
     echo "" >> ~/.bashrc
 
 # 安装更新

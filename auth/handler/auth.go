@@ -2,47 +2,62 @@ package handler
 
 import (
 	"context"
+	"strconv"
 
+	"github.com/HelloZouYou/go-micro-test/auth/model/access"
+	auth "github.com/HelloZouYou/go-micro-test/auth/proto/auth"
 	"github.com/micro/go-micro/util/log"
-
-	auth "auth/proto/auth"
 )
 
-type Auth struct{}
+var (
+	accessService access.Service
+)
 
-// Call is a single request handler called via client.Call or the generated client code
-func (e *Auth) Call(ctx context.Context, req *auth.Request, rsp *auth.Response) error {
-	log.Log("Received Auth.Call request")
-	rsp.Msg = "Hello " + req.Name
+// Init 初始化handler
+func Init() {
+	var err error
+	accessService, err = access.GetService()
+	if err != nil {
+		log.Fatal("[Init] 初始化Handler错误，%s", err)
+		return
+	}
+}
+
+type Service struct{}
+
+// MakeAccessToken 生成token
+func (s *Service) MakeAccessToken(ctx context.Context, req *auth.Request, rsp *auth.Response) error {
+	log.Log("[MakeAccessToken] 收到创建token请求")
+
+	token, err := accessService.MakeAccessToken(&access.Subject{
+		ID:   strconv.FormatUint(req.UserId, 10),
+		Name: req.UserName,
+	})
+	if err != nil {
+		rsp.Error = &auth.Error{
+			Detail: err.Error(),
+		}
+
+		log.Logf("[MakeAccessToken] token生成失败，err：%s", err)
+		return err
+	}
+
+	rsp.Token = token
 	return nil
 }
 
-// Stream is a server side stream handler called via client.Stream or the generated client code
-func (e *Auth) Stream(ctx context.Context, req *auth.StreamingRequest, stream auth.Auth_StreamStream) error {
-	log.Logf("Received Auth.Stream request with count: %d", req.Count)
-
-	for i := 0; i < int(req.Count); i++ {
-		log.Logf("Responding: %d", i)
-		if err := stream.Send(&auth.StreamingResponse{
-			Count: int64(i),
-		}); err != nil {
-			return err
+// DelUserAccessToken 清除用户token
+func (s *Service) DelUserAccessToken(ctx context.Context, req *auth.Request, rsp *auth.Response) error {
+	log.Log("[DelUserAccessToken] 清除用户token")
+	err := accessService.DelUserAccessToken(req.Token)
+	if err != nil {
+		rsp.Error = &auth.Error{
+			Detail: err.Error(),
 		}
+
+		log.Logf("[DelUserAccessToken] 清除用户token失败，err：%s", err)
+		return err
 	}
 
 	return nil
-}
-
-// PingPong is a bidirectional stream handler called via client.Stream or the generated client code
-func (e *Auth) PingPong(ctx context.Context, stream auth.Auth_PingPongStream) error {
-	for {
-		req, err := stream.Recv()
-		if err != nil {
-			return err
-		}
-		log.Logf("Got ping %v", req.Stroke)
-		if err := stream.Send(&auth.Pong{Stroke: req.Stroke}); err != nil {
-			return err
-		}
-	}
 }

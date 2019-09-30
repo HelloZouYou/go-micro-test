@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package mu.micro.book.srv.auth;
 
-service Auth {
+service Service {
     rpc MakeAccessToken (Request) returns (Response) {
     }
     rpc DelUserAccessToken (Request) returns (Response) {

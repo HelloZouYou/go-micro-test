@@ -1,35 +1,54 @@
 package main
 
 import (
-	"github.com/micro/go-micro/util/log"
-	"github.com/micro/go-micro"
-	"auth/handler"
-	"auth/subscriber"
+	"fmt"
 
-	auth "auth/proto/auth"
+	"github.com/HelloZouYou/go-micro-test/auth/handler"
+	"github.com/HelloZouYou/go-micro-test/auth/model"
+	s "github.com/HelloZouYou/go-micro-test/auth/proto/auth"
+	"github.com/HelloZouYou/go-micro-test/basic"
+	"github.com/HelloZouYou/go-micro-test/basic/config"
+	"github.com/micro/cli"
+	"github.com/micro/go-micro"
+	"github.com/micro/go-micro/registry"
+	etcd "github.com/micro/go-plugins/registry/etcdv3"
+	"github.com/micro/go-micro/util/log"
 )
 
 func main() {
-	// New Service
+	// 初始化配置、数据库等信息
+	basic.Init()
+
+	// 使用etcd注册
+	micReg := etcd.NewRegistry(registryOptions)
+
+	// 新建服务
 	service := micro.NewService(
 		micro.Name("mu.micro.book.srv.auth"),
+		micro.Registry(micReg),
 		micro.Version("latest"),
 	)
 
-	// Initialise service
-	service.Init()
+	// 服务初始化
+	service.Init(
+		micro.Action(func(c *cli.Context) {
+			// 初始化handler
+			model.Init()
+			// 初始化handler
+			handler.Init()
+		}),
+	)
 
-	// Register Handler
-	auth.RegisterAuthHandler(service.Server(), new(handler.Auth))
+	// 注册服务
+	s.RegisterServiceHandler(service.Server(), new(handler.Service))
 
-	// Register Struct as Subscriber
-	micro.RegisterSubscriber("mu.micro.book.srv.auth", service.Server(), new(subscriber.Auth))
-
-	// Register Function as Subscriber
-	micro.RegisterSubscriber("mu.micro.book.srv.auth", service.Server(), subscriber.Handler)
-
-	// Run service
+	// 启动服务
 	if err := service.Run(); err != nil {
 		log.Fatal(err)
 	}
+}
+
+func registryOptions(ops *registry.Options) {
+	etcdCfg := config.GetEtcdConfig()
+	ops.Addrs = []string{fmt.Sprintf("%s:%d", etcdCfg.GetHost(), etcdCfg.GetPort())}
 }

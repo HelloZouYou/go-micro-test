@@ -42,7 +42,9 @@ func main() {
 
 	// 注册登录接口
 	service.HandleFunc("/user/login", handler.Login)
-
+	// 注册退出接口
+	service.HandleFunc("/user/logout", handler.Logout)
+	
 	// 运行服务
 	if err := service.Run(); err != nil {
 		log.Fatal(err)

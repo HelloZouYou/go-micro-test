@@ -28,6 +28,7 @@ services:
     depends_on:
       - mysql
       - etcd
+      - redis
 
   ### MySQL ###############################################
   mysql:
@@ -78,15 +79,15 @@ services:
       - --log-outputs
       - stderr
 
-    ### Redis ################################################
-    redis:
-      build: ./redis
-      volumes:
-        - ${DATA_PATH_HOST}/redis:/data
-      ports:
-        - "${REDIS_PORT}:6379"
-      networks:
-        - backend
+  ### Redis ################################################
+  redis:
+    build: ./redis
+    volumes:
+      - ${DATA_PATH_HOST}/redis:/data
+    ports:
+      - "${REDIS_PORT}:6379"
+    networks:
+      - backend
 
   ### USER-SRV ############################################
   user-srv:
@@ -101,3 +102,4 @@ services:
     depends_on:
       - mysql
       - etcd
+      - redis

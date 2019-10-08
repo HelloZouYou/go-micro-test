@@ -9,13 +9,12 @@ RUN sed -i 's/\r//' /root/aliases.sh && \
     echo "" >> ~/.bashrc && \
     echo "# Load Custom Aliases" >> ~/.bashrc && \
     echo "source ~/aliases.sh" >> ~/.bashrc && \
-    echo "alias ll='ls -l'" && \
     echo "" >> ~/.bashrc
 
 # 安装更新
 RUN apt-get update -y && \
     apt-get upgrade -y
-RUN apt-get install -y apt-utils autoconf automake libtool curl make g++ musl-dev vim
+RUN apt-get install -y apt-utils autoconf automake libtool curl make g++ musl-dev vim net-tools
 
 # 设置时区
 ARG TZ=PRC

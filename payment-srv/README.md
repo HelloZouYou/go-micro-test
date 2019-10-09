@@ -1,11 +1,11 @@
-# Inventory Service
+# Payment Service
 
-This is the Inventory service
+This is the Payment service
 
 Generated with
 
 ```
-micro new payment-srv --namespace=mu.micro.book --alias=inventory --type=srv
+micro new payment-srv --namespace=mu.micro.book --alias=payment --type=srv
 ```
 
 ## Getting Started
@@ -16,9 +16,9 @@ micro new payment-srv --namespace=mu.micro.book --alias=inventory --type=srv
 
 ## Configuration
 
-- FQDN: mu.micro.book.srv.inventory
+- FQDN: mu.micro.book.srv.payment
 - Type: srv
-- Alias: inventory
+- Alias: payment
 
 ## Dependencies
 
@@ -46,7 +46,7 @@ make build
 
 Run the service
 ```
-./inventory-srv
+./payment-srv
 ```
 
 Build a docker image

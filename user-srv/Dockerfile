@@ -10,6 +10,4 @@ COPY conf /conf
 
 ENTRYPOINT [ "/user-srv" ]
 
-CMD [ "--registry_address=registry:8500 --register_interval=5 --register_ttl=10" ]
-
-EXPOSE 8080
+CMD [ "--registry_address=etcd:2379 --register_interval=5 --register_ttl=10" ]

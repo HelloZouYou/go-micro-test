@@ -5,7 +5,7 @@ GOPATH:=$(shell go env GOPATH)
 .PHONY: build
 build:
 
-	go build -o inventory-web main.go plugin.go
+	go build -o payment-web main.go plugin.go
 
 .PHONY: test
 test:
@@ -13,4 +13,4 @@ test:
 
 .PHONY: docker
 docker:
-	docker build . -t inventory-web:latest
+	docker build . -t payment-web:latest

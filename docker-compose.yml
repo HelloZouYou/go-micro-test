@@ -7,7 +7,21 @@ networks:
     driver: bridge
 
 volumes:
+  auth:
+    driver: local
+  inventory-srv:
+    driver: local
+  orders-srv:
+    driver: local
+  orders-web:
+    driver: local
+  payment-srv:
+    driver: local
+  payment-web:
+    driver: local
   user-srv:
+    driver: local
+  user-web:
     driver: local
 
 services:
@@ -79,7 +93,7 @@ services:
       - --log-outputs
       - stderr
 
-  ### Redis ################################################
+  ### Redis ###############################################
   redis:
     build: ./redis
     volumes:
@@ -89,13 +103,108 @@ services:
     networks:
       - backend
 
+  ### AUTH ################################################
+  auth:
+    build: ./auth
+    environment:
+      - TZ=${TIMEZONE}
+    tty: true
+    networks:
+      - backend
+    depends_on:
+      - mysql
+      - etcd
+      - redis
+
+  ### INVENTORY-SRV ################################################
+  inventory-srv:
+    build: ./inventory-srv
+    environment:
+      - TZ=${TIMEZONE}
+    tty: true
+    networks:
+      - backend
+    depends_on:
+      - mysql
+      - etcd
+      - redis
+
+  ### ORDERS-SRV ##########################################
+  orders-srv:
+    build: ./orders-srv
+    environment:
+      - TZ=${TIMEZONE}
+    tty: true
+    networks:
+      - backend
+    depends_on:
+      - mysql
+      - etcd
+      - redis
+
+  ### ORDERS-WEB ##########################################
+  orders-web:
+    build: ./orders-web
+    environment:
+      - TZ=${TIMEZONE}
+    ports:
+      - "8091:8091"
+    tty: true
+    networks:
+      - backend
+    depends_on:
+      - mysql
+      - etcd
+      - redis
+
+  ### PAYMENT-SRV #########################################
+  payment-srv:
+    build: ./payment-srv
+    environment:
+      - TZ=${TIMEZONE}
+    tty: true
+    networks:
+      - backend
+    depends_on:
+      - mysql
+      - etcd
+      - redis
+
+  ### PAYMENT-WEB #########################################
+  payment-web:
+    build: ./payment-web
+    environment:
+      - TZ=${TIMEZONE}
+    ports:
+      - "8090:8090"
+    tty: true
+    networks:
+      - backend
+    depends_on:
+      - mysql
+      - etcd
+      - redis
+
   ### USER-SRV ############################################
   user-srv:
     build: ./user-srv
     environment:
       - TZ=${TIMEZONE}
+    tty: true
+    networks:
+      - backend
+    depends_on:
+      - mysql
+      - etcd
+      - redis
+
+  ### USER-WEB ############################################
+  user-web:
+    build: ./user-web
+    environment:
+      - TZ=${TIMEZONE}
     ports:
-      - "8080:8080"
+      - "8088:8088"
     tty: true
     networks:
       - backend

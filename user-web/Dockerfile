@@ -1,5 +1,15 @@
 FROM alpine
-ADD html /html
-ADD user-web /user-web
-WORKDIR /
+
+# 设置时区
+ARG TZ=PRC
+ENV TZ ${TZ}
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+COPY user-web /user-web
+COPY conf /conf
+
 ENTRYPOINT [ "/user-web" ]
+
+CMD [ "--registry_address=etcd:2379 --register_interval=5 --register_ttl=10" ]
+
+EXPOSE 8088

@@ -1,35 +1,54 @@
 package main
 
 import (
-	"github.com/micro/go-micro/util/log"
-	"github.com/micro/go-micro"
-	"payment-srv/handler"
-	"payment-srv/subscriber"
+	"fmt"
 
-	inventory "payment-srv/proto/inventory"
+	"github.com/HelloZouYou/go-micro-test/basic"
+	"github.com/HelloZouYou/go-micro-test/basic/config"
+	"github.com/HelloZouYou/go-micro-test/payment-srv/handler"
+	"github.com/HelloZouYou/go-micro-test/payment-srv/model"
+	s "github.com/HelloZouYou/go-micro-test/payment-srv/proto/payment"
+	"github.com/micro/cli"
+	"github.com/micro/go-micro"
+	"github.com/micro/go-micro/registry"
+	etcd "github.com/micro/go-plugins/registry/etcdv3"
+	"github.com/micro/go-micro/util/log"
 )
 
 func main() {
-	// New Service
+	// 初始化配置、数据库等信息
+	basic.Init()
+
+	// 使用etcd注册
+	micReg := etcd.NewRegistry(registryOptions)
+
+	// 新建服务
 	service := micro.NewService(
-		micro.Name("mu.micro.book.srv.inventory"),
+		micro.Name("mu.micro.book.srv.payment"),
+		micro.Registry(micReg),
 		micro.Version("latest"),
 	)
 
-	// Initialise service
-	service.Init()
+	// 服务初始化
+	service.Init(
+		micro.Action(func(c *cli.Context) {
+			// 初始化模型层
+			model.Init()
+			// 初始化handler
+			handler.Init()
+		}),
+	)
 
-	// Register Handler
-	inventory.RegisterInventoryHandler(service.Server(), new(handler.Inventory))
+	// 注册服务
+	s.RegisterPaymentHandler(service.Server(), new(handler.Service))
 
-	// Register Struct as Subscriber
-	micro.RegisterSubscriber("mu.micro.book.srv.inventory", service.Server(), new(subscriber.Inventory))
-
-	// Register Function as Subscriber
-	micro.RegisterSubscriber("mu.micro.book.srv.inventory", service.Server(), subscriber.Handler)
-
-	// Run service
+	// 启动服务
 	if err := service.Run(); err != nil {
 		log.Fatal(err)
 	}
+}
+
+func registryOptions(ops *registry.Options) {
+	etcdCfg := config.GetEtcdConfig()
+	ops.Addrs = []string{fmt.Sprintf("%s:%d", etcdCfg.GetHost(), etcdCfg.GetPort())}
 }

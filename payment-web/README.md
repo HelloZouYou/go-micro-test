@@ -1,11 +1,11 @@
-# Inventory Service
+# Payment Service
 
-This is the Inventory service
+This is the Payment service
 
 Generated with
 
 ```
-micro new payment-web --namespace=mu.micro.book --alias=inventory --type=web
+micro new payment-web --namespace=mu.micro.book --alias=payment --type=web
 ```
 
 ## Getting Started
@@ -16,9 +16,9 @@ micro new payment-web --namespace=mu.micro.book --alias=inventory --type=web
 
 ## Configuration
 
-- FQDN: mu.micro.book.web.inventory
+- FQDN: mu.micro.book.web.payment
 - Type: web
-- Alias: inventory
+- Alias: payment
 
 ## Dependencies
 
@@ -46,7 +46,7 @@ make build
 
 Run the service
 ```
-./inventory-web
+./payment-web
 ```
 
 Build a docker image

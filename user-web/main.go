@@ -8,9 +8,9 @@ import (
 	"github.com/HelloZouYou/go-micro-test/user-web/handler"
 	"github.com/micro/cli"
 	"github.com/micro/go-micro/registry"
-	etcd "github.com/micro/go-plugins/registry/etcdv3"
 	"github.com/micro/go-micro/util/log"
 	"github.com/micro/go-micro/web"
+	etcd "github.com/micro/go-plugins/registry/etcdv3"
 )
 
 func main() {
@@ -44,7 +44,8 @@ func main() {
 	service.HandleFunc("/user/login", handler.Login)
 	// 注册退出接口
 	service.HandleFunc("/user/logout", handler.Logout)
-	
+	service.HandleFunc("/user/test", handler.TestSession)
+
 	// 运行服务
 	if err := service.Run(); err != nil {
 		log.Fatal(err)

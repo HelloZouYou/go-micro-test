@@ -8,6 +8,7 @@ import (
 
 	us "github.com/HelloZouYou/go-micro-test/user-srv/proto/user"
 	auth "github.com/HelloZouYou/go-micro-test/auth/proto/auth"
+	"github.com/HelloZouYou/go-micro-test/plugins/session"
 	"github.com/micro/go-micro/client"
 	"github.com/micro/go-micro/util/log"
 )
@@ -23,6 +24,7 @@ type Error struct {
 	Detail string `json:"detail"`
 }
 
+// Init 初始化
 func Init() {
 	serviceClient = us.NewUserService("mu.micro.book.srv.user", client.DefaultClient)
 	authClient = auth.NewService("mu.micro.book.srv.auth", client.DefaultClient)
@@ -82,6 +84,12 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		cookie := http.Cookie{Name: "remember-me-token", Value: rsp2.Token, Path: "/", Expires: expire, MaxAge: 90000}
 		http.SetCookie(w, &cookie)
 
+		// 同步到session中
+		sess := session.GetSession(w, r)
+		sess.Values["userId"] = rsp.User.Id
+		sess.Values["userName"] = rsp.User.Name
+		_ = sess.Save(r, w)
+
 	} else {
 		response["success"] = false
 		response["error"] = &Error{
@@ -140,4 +148,21 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), 500)
 		return
 	}
+}
+
+// TestSession TestSession
+func TestSession(w http.ResponseWriter, r *http.Request) {
+	sess := session.GetSession(w, r)
+
+	if v, ok := sess.Values["path"]; !ok {
+		sess.Values["path"] = r.URL.Query().Get("path")
+		log.Logf("path:" + r.URL.Query().Get("path"))
+	} else {
+		log.Logf(v.(string))
+	}
+
+	log.Logf(sess.ID)
+	log.Logf(sess.Name())
+
+	w.Write([]byte("OK"))
 }

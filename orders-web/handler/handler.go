@@ -27,6 +27,7 @@ type Error struct {
 	Detail string `json:"detail"`
 }
 
+// Init 初始化
 func Init() {
 	serviceClient = orders.NewOrdersService("mu.micro.book.srv.orders", client.DefaultClient)
 	authClient = auth.NewService("mu.micro.book.srv.auth", client.DefaultClient)
@@ -42,14 +43,14 @@ func New(w http.ResponseWriter, r *http.Request) {
 	}
 
 	r.ParseForm()
-	bookId, _ := strconv.ParseInt(r.Form.Get("bookId"), 10, 10)
+	bookID, _ := strconv.ParseInt(r.Form.Get("bookId"), 10, 10)
 
 	// 返回结果
 	response := map[string]interface{}{}
 
 	// 调用后台服务
 	rsp, err := serviceClient.New(context.TODO(), &orders.Request{
-		BookId: bookId,
+		BookId: bookID,
 		UserId: session.GetSession(w, r).Values["userId"].(int64),
 	})
 
@@ -74,7 +75,7 @@ func New(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-//
+// Hello Hello
 func Hello(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("hello"))
 }

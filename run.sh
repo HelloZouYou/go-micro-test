@@ -28,5 +28,4 @@ cd  $DIR/user-web
 GOOS=linux go build -o user-web *.go
 
 cd $DIR
-docker-compose down
-docker-compose up -d
+docker-compose up -d --build auth inventory-srv orders-srv orders-web payment-srv payment-web user-srv user-web

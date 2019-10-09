@@ -26,29 +26,28 @@ func AuthWrapper(h http.Handler) http.Handler {
 			if sess.Values["valid"] != nil {
 				h.ServeHTTP(w, r)
 				return
-			} else {
-				userId := sess.Values["userId"].(uint64)
-				if userId != 0 {
-					rsp, err := authClient.GetCachedAccessToken(context.TODO(), &auth.Request{
-						UserId: userId,
-					})
-					if err != nil {
-						log.Logf("[AuthWrapper]，err：%s", err)
-						http.Error(w, "非法请求", 400)
-						return
-					}
-
-					// token不一致
-					if rsp.Token != ck.Value {
-						log.Logf("[AuthWrapper]，token不一致")
-						http.Error(w, "非法请求", 400)
-						return
-					}
-				} else {
-					log.Logf("[AuthWrapper]，session不合法，无用户id")
+			}
+			userID := sess.Values["userId"].(int64)
+			if userID != 0 {
+				rsp, err := authClient.GetCachedAccessToken(context.TODO(), &auth.Request{
+					UserId: userID,
+				})
+				if err != nil {
+					log.Logf("[AuthWrapper]，err：%s", err)
 					http.Error(w, "非法请求", 400)
 					return
 				}
+
+				// token不一致
+				if rsp.Token != ck.Value {
+					log.Logf("[AuthWrapper]，token不一致")
+					http.Error(w, "非法请求", 400)
+					return
+				}
+			} else {
+				log.Logf("[AuthWrapper]，session不合法，无用户id")
+				http.Error(w, "非法请求", 400)
+				return
 			}
 		} else {
 			http.Error(w, "非法请求", 400)

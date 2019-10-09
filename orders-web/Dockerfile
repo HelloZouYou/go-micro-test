@@ -10,6 +10,4 @@ COPY conf /conf
 
 ENTRYPOINT [ "/orders-web" ]
 
-CMD [ "--registry_address=etcd:2379 --register_interval=5 --register_ttl=10" ]
-
 EXPOSE 8091

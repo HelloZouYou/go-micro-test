@@ -9,5 +9,3 @@ COPY user-srv /user-srv
 COPY conf /conf
 
 ENTRYPOINT [ "/user-srv" ]
-
-CMD [ "--registry_address=etcd:2379 --register_interval=5 --register_ttl=10" ]

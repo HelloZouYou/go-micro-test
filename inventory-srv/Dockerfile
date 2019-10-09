@@ -9,5 +9,3 @@ COPY inventory-srv /inventory-srv
 COPY conf /conf
 
 ENTRYPOINT [ "/inventory-srv" ]
-
-CMD [ "--registry_address=etcd:2379 --register_interval=5 --register_ttl=10" ]

@@ -9,5 +9,3 @@ COPY auth /auth
 COPY conf /conf
 
 ENTRYPOINT [ "/auth" ]
-
-CMD [ "--registry_address=etcd:2379 --register_interval=5 --register_ttl=10" ]

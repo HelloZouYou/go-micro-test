@@ -93,6 +93,17 @@ services:
       - --log-outputs
       - stderr
 
+  ### ETCDKEEPER ##########################################
+  etcdkeeper:
+    build: ./etcdkeeper
+    environment:
+      - TZ=${TIMEZONE}
+      - GOPROXY=${GOPROXY}
+    ports:
+      - "${ETCDKEEPER_PORT}:8080"
+    depends_on:
+      - etcd
+
   ### Redis ###############################################
   redis:
     build: ./redis

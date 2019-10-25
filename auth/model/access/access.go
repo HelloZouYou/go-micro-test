@@ -5,13 +5,17 @@ import (
 	"sync"
 
 	r "github.com/go-redis/redis"
-	"github.com/HelloZouYou/go-micro-test/basic/redis"
+	"github.com/HelloZouYou/go-micro-test/basic/config"
+	"github.com/HelloZouYou/go-micro-test/plugins/jwt"
+	"github.com/HelloZouYou/go-micro-test/plugins/redis"
+	"github.com/micro/go-micro/util/log"
 )
 
 var (
 	s  *service
 	ca *r.Client
 	m  sync.RWMutex
+	cfg = &jwt.Jwt{}
 )
 
 // service 服务
@@ -47,7 +51,14 @@ func Init() {
 		return
 	}
 
-	ca = redis.GetRedis()
+	err := config.C().App("jwt", cfg)
+	if err != nil {
+		panic(err)
+	}
+
+	log.Logf("[initCfg]配置，cfg：%v", cfg)
+	
+	ca = redis.Redis()
 
 	s = &service{}
 }
